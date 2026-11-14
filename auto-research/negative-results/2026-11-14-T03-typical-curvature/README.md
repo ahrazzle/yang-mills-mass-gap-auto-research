@@ -5,7 +5,7 @@
 - Result ID and date: `2026-11-14-T03-typical-curvature`; 2026-11-14.
 - Author: Rohan Arun, with Claude (Anthropic) assistance in a Claude Code session.
 - Tracks: T03-D primary; T04 and T06 related.
-- Outcome: **negative result for two untried variants of the geometric route.** (1) A probabilistic version of the curvature argument ("positive curvature on typical configurations, with the atypical set controlled separately") fails at the coupling range that matters. (2) Restricting to directions orthogonal to the gauge orbits does not repair it: the compressed horizontal matrix is also negative for $\beta\geq0.5$ (see the addendum). The true quotient curvature, which adds terms not computed here, remains untested. No mass-gap estimate.
+- Outcome: **negative result for three untried variants of the geometric route.** (1) A probabilistic version of the curvature argument ("positive curvature on typical configurations, with the atypical set controlled separately") fails at the coupling range that matters. (2) Restricting to directions orthogonal to the gauge orbits does not repair it: the compressed horizontal matrix is also negative for $\beta\geq0.5$ (see the addendum). (3) The true quotient curvature, including the O'Neill and orbit-volume terms (Addendum 2), is also negative for $\beta\gtrsim0.5$ in four dimensions ($3^4$) and $\beta\gtrsim1$ in three dimensions. No mass-gap estimate.
 - Evidence: Monte Carlo and floating-point linear algebra on $3^4$ and $4^4$ tori. Exact Hessian, validated against finite differences. No proof, no Lean, no independent review.
 - Repository base commit: `ff784a0`.
 - Toolchain: Python 3.9.6, numpy 2.0.2, scipy 1.13.1.
@@ -96,7 +96,7 @@ Observations:
 2. **At $\beta\geq4$ the full matrix is dominated by gauge directions** (gauge weight $0.66$–$0.84$; the gauge block alone has minimum $-6.5$ at $\beta=8$). Removing them improves the minimum from $-11.5$ to $-3.1$, but it stays negative.
 3. **The horizontal minimum appears to saturate at weak coupling.** The product $\beta\times\lambda_{\min}(\mathrm{Hess}|_h)$ is about $-5.5$ at $\beta=4$ and $-5.1$ at $\beta=8$ on $4^4$ (and $-5.5,-5.3$ on $3^4$): the Hessian's negative part shrinks like $1/\beta$, consistent with a correction of second order in the typical plaquette angle ($\theta^2\sim1/\beta$). Two couplings do not establish a limit, but if it holds, the compressed horizontal curvature tends to about $2-5\approx-3$, a bounded negative constant rather than a divergence.
 
-What this does **not** settle: the compressed matrix is not the Ricci curvature of the quotient. For a Riemannian submersion O'Neill's formulas add a non-negative term built from the curvature of the connection, and gauge orbits are not totally geodesic, so the volume of the orbit also weights the quotient measure. I have not computed either. Heuristically both are independent of $\beta$ and the first scales with the plaquette field strength, so I would expect them to vanish as $\beta\to\infty$ and to leave the weak-coupling conclusion (negative) intact, but at intermediate coupling ($\beta\approx0.5$–$2$) they are $O(1)$ and could change the sign. That is the open question. Orbit-space geometry in the literature (Singer; the work cited in the posterior-curvature record) concerns exactly these terms and was not consulted.
+What this does **not** settle: the compressed matrix is not the Ricci curvature of the quotient. For a Riemannian submersion O'Neill's formulas add a non-negative term built from the curvature of the connection, and gauge orbits are not totally geodesic, so the volume of the orbit also weights the quotient measure. I have not computed either. Both were computed afterwards (Addendum 2 below), which also corrects a heuristic originally stated here, that they would vanish at weak coupling. Orbit-space geometry in the literature (Singer; the work cited in the posterior-curvature record) concerns exactly these terms and was not consulted.
 
 Reproduction:
 
@@ -108,18 +108,88 @@ python3 auto-research/negative-results/2026-11-14-T03-typical-curvature/check_ho
 
 The $3^4$ run took about 22 seconds per coupling in parallel; the $4^4$ run several minutes. Receipt fields are in [verification.json](verification.json).
 
+## Addendum 2: the quotient terms, computed
+
+The first addendum left open the two terms that separate the compressed matrix from the Bakry–Émery matrix of the gauge quotient $B=M/\mathcal G$. They are now computed exactly, validated, and run on the sampled configurations. **The first addendum's heuristic that these terms vanish at weak coupling was wrong**; the conclusion it was meant to support nevertheless stands.
+
+### What is computed
+
+$M=(S^3)^E$ with the product round metric ($\mathrm{Ric}_M=2$), gauge map $G=G_1-G_2$ as above, and the quotient measure $e^{-\beta S}\,V\,d\mathrm{vol}_B$ with $V\propto\det(G^{T}G)^{1/2}$ the orbit volume. For a horizontal $X$:
+
+$$
+\mathrm{Ric}_B(X,X)+\mathrm{Hess}_B(\beta S-\log V)(X,X)
+=2|X|^2+X^{T}(Q_1+Q_2)X+\beta X^{T}\mathrm{Hess}_MS\,X+X^{T}\mathrm{Hess}_M\psi\,X,
+\qquad\psi=-\tfrac12\log\det(G^{T}G).
+$$
+
+- $\mathrm{Ric}_B(X,X)=\mathrm{Ric}_M(X,X)-\sum_{V}K_M(X,V)+3\sum_Y|A_XY|^2$, from O'Neill's formula $K_B=K_M+3|A_XY|^2$ for horizontal orthonormal $X,Y$, which does not require totally geodesic fibres. Vertical sectional curvatures give $Q_1$; the $A$-tensor gives $Q_2$.
+- $S$ and $V$ are gauge invariant, so their Hessians on $B$ equal the compressed Hessians on $M$ at horizontal vectors.
+- Closed forms, with $P=(G^{T}G)^{-1}$, $\Pi=GPG^{T}$, $\Pi_h=I-\Pi$ and $C_i$ the cross-product matrices: $Q_1=-\mathrm{blockdiag}_e(\mathrm{tr}\,\Pi_{ee}\,I-\Pi_{ee})$; $Q_2=3\sum_aB_a^{T}\Pi_hB_a$ with $B_a=\mathrm{blockdiag}_e[c_{a,e}]_\times$ and $c_a=(G_1+G_2)\epsilon_a$, $\epsilon=P^{1/2}$ (from $\nabla_XK_\epsilon=-\tfrac12\mathrm{ad}(X)(G_1+G_2)\epsilon$ for the gauge Killing fields $K_\epsilon$); and $\mathrm{Hess}\,\psi=T_1+T_2$ with $T_1,T_2$ given by contractions of $G_1PG^{T}$, $G_1PG_1^{T}$, $GPG_1^{T}$ in the script docstring.
+
+### Validation (all in [quotient_validation.txt](quotient_validation.txt))
+
+1. $\mathrm{Hess}\,\psi$ against Richardson-extrapolated finite differences of $-\tfrac12\log\det(G^{T}G)$ on a $3^3$ torus: worst relative error $8.7\times10^{-8}$.
+2. The $A$-tensor on a lattice with distinct link endpoints ($d=2$, $L=3$): $\langle A_XY,V_a\rangle$ from a finite-difference derivative of the horizontal projector (with $\nabla_XY=dY(X)+\tfrac12[X,Y]$) against the closed form: worst relative error $2.1\times10^{-9}$ on components of size $1.6$–$2.7$.
+3. The assembled $\mathrm{Ric}_B$ pieces against an independent computation of the Ricci tensor of the toy quotient (one site, two links, quotient by simultaneous conjugation, a three-dimensional orbit space whose metric is pushed forward from the invariants $\mathrm{Re}\,a,\mathrm{Re}\,b,\mathrm{Re}\,ab$): six points, three directions each, worst absolute difference $3.1\times10^{-5}$, with $Q_1\approx-1.2$ to $-2.1$ and $Q_2\approx0.007$ to $0.24$ in those comparisons.
+
+### Results (6 thermalized samples per coupling; lowest eigenvalue on the horizontal space)
+
+| $d$, $L$ | $\beta$ | compressed (Addendum 1) | full quotient, mean | full quotient, range over samples | $Q_1$ | $Q_2$ |
+| --- | --- | --- | --- | --- | --- | --- |
+| 4, 3 | 0.25 | 0.04 | **+1.29** | [+1.26, +1.36] | −0.50 | 1.75 |
+| 4, 3 | 0.5 | −1.66 | −0.40 | [−0.54, −0.28] | −0.50 | 1.75 |
+| 4, 3 | 1 | −4.57 | −3.32 | [−3.72, −2.85] | −0.50 | 1.75 |
+| 4, 3 | 2 | −7.70 | −6.44 | [−7.82, −5.60] | −0.50 | 1.76 |
+| 4, 3 | 4 | −3.80 | −2.50 | [−3.22, −1.40] | −0.51 | 1.84 |
+| 4, 3 | 8 | −3.35 | −1.95 | [−2.73, −1.22] | −0.51 | 1.95 |
+| 3, 3 | 0.5 | −0.99 | **+0.85** | [+0.71, +1.00] | −0.67 | 2.49 |
+| 3, 4 | 0.5 | −1.12 | **+0.73** | [+0.57, +0.89] | −0.67 | 2.50 |
+| 3, 3 | 1 | −3.30 | −1.45 | [−1.65, −0.85] | −0.67 | 2.49 |
+| 3, 4 | 1 | −3.59 | −1.73 | [−2.31, −1.25] | −0.67 | 2.50 |
+| 3, 3 | 8 | −4.20 | −2.16 | [−3.47, −1.30] | −0.68 | 2.90 |
+| 3, 4 | 8 | −4.40 | −2.42 | [−3.14, −0.82] | −0.67 | 2.76 |
+
+Full tables, including $\beta=1.5,3,6$ in four dimensions and $\beta=2,4$ in three, are in [quot_d4_L3.json](quot_d4_L3.json), [quot_d3_L3.json](quot_d3_L3.json) and [quot_d3_L4.json](quot_d3_L4.json).
+
+Observations:
+
+1. **The quotient terms act as an almost $\beta$-independent upward shift.** The net shift of the lowest eigenvalue is $+1.26$ in four dimensions and $+1.85$ in three, nearly constant from $\beta=0.25$ to $\beta=6$ and rising slightly at $\beta=8$. $Q_1\approx-2/d$ and $Q_2\approx1.75$ ($d=4$) or $2.5$ ($d=3$) vary little over the horizontal space.
+2. **The orbit-volume term is negligible.** The eigenvalues of $\mathrm{Hess}\,\psi$ on the horizontal space stay within $\pm0.2$ in four dimensions ($\pm0.5$ in three at $\beta=8$).
+3. **The sign threshold moves up, then stops.** Linear interpolation puts the zero crossing of the lowest eigenvalue at about $\beta\approx0.44$ ($d=4$, $L=3$; it was about $0.25$ before the quotient terms) and about $0.65$–$0.7$ ($d=3$). Every sample at $\beta\geq0.5$ ($d=4$) and $\beta\geq1$ ($d=3$) is negative; at $\beta=0.25$ ($d=4$) and $\beta=0.5$ ($d=3$) every sample is positive.
+4. **At weak coupling the quotient curvature appears to settle at a negative constant** near $-2$ in four dimensions ($-2.5,-2.05,-1.95$ at $\beta=4,6,8$; the worst samples are up to about $0.8$ lower). Three couplings do not establish a limit.
+5. **Volume makes it worse, not better.** In three dimensions $L=4$ is more negative than $L=3$ at $\beta\geq1$ (for example $-5.1$ against $-3.1$ at $\beta=4$), as expected for a minimum over more modes. The four-dimensional numbers are for $L=3$ only ($4^4$ would cost roughly 30 times more per sample and several gigabytes per process), so they are probably optimistic.
+6. **The earlier heuristic failed.** I expected the $A$-tensor contribution to scale with plaquette field strength and vanish as $\beta\to\infty$. It does not: $Q_2$ is $1.75$–$1.95$ at every coupling in four dimensions, and I did not identify why. The correction is nonetheless a bounded constant, too small to change the sign above the threshold.
+
+### What this establishes and what it does not
+
+For the bare four-dimensional Wilson measure at $3^4$ and the three-dimensional measures at $3^3$ and $4^3$, the pointwise Bakry–Émery matrix of the **gauge quotient** (not only of the unfixed space) is negative on typical configurations for $\beta\gtrsim0.5$ ($d=4$) and $\beta\gtrsim1$ ($d=3$), in a band of directions. Since the notebook records the endpoint coupling $\mathrm{bar}>1$, this closes pointwise and probabilistic Bakry–Émery arguments on the quotient at the relevant couplings, at least at these volumes.
+
+Not established: infinite volume (the volume trend is the wrong way); larger four-dimensional tori; the singular strata of the quotient (stabilizer-nontrivial configurations), where the quotient is not a manifold and the Bakry–Émery argument would need separate justification; and, as before, any non-pointwise geometric mechanism. Pointwise curvature is sufficient for a Poincaré inequality, not necessary.
+
+Reproduction:
+
+```sh
+python3 auto-research/negative-results/2026-11-14-T03-typical-curvature/check_quotient_curvature.py validate
+python3 auto-research/negative-results/2026-11-14-T03-typical-curvature/check_quotient_curvature.py run 3 0.25,0.5,1,1.5,2,3,4,6,8 6 150 15 quot_d4_L3.json 4
+python3 auto-research/negative-results/2026-11-14-T03-typical-curvature/check_quotient_curvature.py run 3 0.5,1,2,4,8 6 150 15 quot_d3_L3.json 3
+python3 auto-research/negative-results/2026-11-14-T03-typical-curvature/check_quotient_curvature.py run 4 0.5,1,2,4,8 6 150 15 quot_d3_L4.json 3
+```
+
+About nine seconds per sample on $3^4$ for the full quotient computation.
+
 ## Failure lesson
 
 Pointwise convexity of the Wilson action's configuration space is not the mechanism behind spatial mixing at intermediate coupling: negative curvature directions are typical, not rare. Before building a probabilistic argument on a curvature bound, measure the typical spectrum.
 
 ## Track contributions and next experiment
 
-- T03-D: the typical-configuration variant of the curvature route is closed at $\beta\gtrsim0.3$; the horizontal-compression variant is closed as well, with the true quotient terms untested.
+- T03-D: the typical-configuration variant of the curvature route is closed at $\beta\gtrsim0.3$; the horizontal-compression variant is closed as well, and so is the true quotient curvature (O'Neill and orbit-volume terms computed in Addendum 2) for $\beta\gtrsim0.5$ ($d=4$, $L=3$).
 - T06: a recorded scope result for the geometric family.
 
-Next bounded experiment: compute the missing quotient terms exactly at intermediate coupling. That means the O'Neill $A$-tensor contribution to the Ricci curvature of the horizontal distribution and the Hessian of $-\log$ of the orbit volume $\det(G^{T}G)^{1/2}$, on the same sampled configurations at $\beta\in[0.5,2]$. Success criterion: the corrected horizontal matrix is positive at all sampled couplings (reopening the quotient route) or still negative (closing it there). Cost: moderate; the log-determinant Hessian and the horizontal brackets of the product metric both need new code.
+Next bounded experiment, if the geometric theme continues: every pointwise curvature variant tried here is negative at the relevant couplings, so what remains is non-pointwise. The most concrete candidate is a multiscale criterion (curvature of a fluctuation field after a Gaussian-type decomposition) on a case where the decomposition is explicit, for example the two- or three-dimensional lattice at the same couplings. A useful outcome would be a multiscale constant that is positive and uniform in volume where the pointwise one is negative; the opposite outcome would close that route too. No code exists for it, so the cost is substantial.
 
 ## Review and correction history
 
 - 2026-11-14: created. Single AI session, small samples, no independent review.
 - 2026-11-14: addendum on gauge versus horizontal directions added to this record (same branch and PR). A first commit message and PR description announced the addendum before the README edit had been applied (an escape-sequence error in my edit script); corrected by the follow-up commit.
+- 2026-11-14: Addendum 2 (quotient terms) added. It corrects a heuristic stated in Addendum 1: the O'Neill term does not vanish at weak coupling (about 1.75 in four dimensions at every coupling sampled). The Addendum 1 conclusion is unchanged.

@@ -49,5 +49,37 @@
     "quotient_ricci_computed": false,
     "oneill_terms_computed": false,
     "orbit_volume_term_computed": false
+  },
+  "quotient_addendum": {
+    "commands_run": [
+      "... check_quotient_curvature.py validate",
+      "... run 3 0.25,0.5,1,1.5,2,3,4,6,8 6 150 15 quot_d4_L3.json 4",
+      "... run 3 0.5,1,2,4,8 6 150 15 quot_d3_L3.json 3",
+      "... run 4 0.5,1,2,4,8 6 150 15 quot_d3_L4.json 3"
+    ],
+    "exit_codes": {
+      "validate": 0,
+      "d4_L3": 0,
+      "d3_L3": 0,
+      "d3_L4": 0
+    },
+    "source_sha256": "4c91f884827581b556f1a227aa101a09b222911aef8e8016930a5c13111d4d00",
+    "output_sha256": {
+      "quot_d4_L3.json": "95a6bd32120303b80694118fa14b4d31257b49c8046863233038ec6b99d2a9f0",
+      "quot_d3_L3.json": "57b6307e5253f42e36f541d710086f167d897099b6891799fc667ed8e498851d",
+      "quot_d3_L4.json": "76966ab42feccf46474d36b3d2128fb3ed5bd7ded8118fff910327f372144ca5",
+      "quotient_validation.txt": "bd72fecea65f7992f3e9f17ccb42344851fd1b234782037e7b6ed76b33961745"
+    },
+    "validation": {
+      "hess_psi_vs_finite_difference_relative": 8.65e-08,
+      "A_tensor_s_ne_t_relative": 2.07e-09,
+      "toy_quotient_ricci_worst_abs_diff": 3.07e-05
+    },
+    "quotient_ricci_computed": true,
+    "oneill_terms_computed": true,
+    "orbit_volume_term_computed": true,
+    "d4_L4_computed": false,
+    "singular_strata_treated": false,
+    "independent_review": false
   }
 }

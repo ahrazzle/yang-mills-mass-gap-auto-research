@@ -106,7 +106,7 @@ Additional established lessons:
 
 - Before trying a curvature, convexity, or Dobrushin-type criterion, [compute its coupling threshold in the repository convention](auto-research/negative-results/2026-11-12-T03-bakry-emery-scope/README.md) and compare it with the endpoint coupling `bar` and the running slope. The Bakry–Émery threshold $\beta<1/[4(d-1)]$ for bare SU(2) equals the cited strong-coupling condition and lies below `bar`. Geometric routes need a bound for the generated coarse measures, not the bare law.
 
-- Pointwise Bakry–Émery curvature of the bare Wilson measure is negative on [typical sampled configurations](auto-research/negative-results/2026-11-14-T03-typical-curvature/README.md) once $\beta\gtrsim0.3$, in a band of directions, so a probabilistic version of the curvature argument is closed at those sizes. Geometric routes must be non-pointwise (multiscale, quotient, ground-state weighted). Measure the typical spectrum before building an argument on a curvature bound.
+- Pointwise Bakry–Émery curvature of the bare Wilson measure is negative on [typical sampled configurations](auto-research/negative-results/2026-11-14-T03-typical-curvature/README.md) once $\beta\gtrsim0.3$, in a band of directions, so a probabilistic version of the curvature argument is closed at those sizes. Geometric routes must be non-pointwise (multiscale, ground-state weighted); the gauge-quotient version, with the O'Neill and orbit-volume terms computed, is closed as well at $3^4$. Measure the typical spectrum before building an argument on a curvature bound.
 
 ## Assessing scientific progress
 
