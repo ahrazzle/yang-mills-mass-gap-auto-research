@@ -5,7 +5,7 @@
 - Result ID and date: `2026-11-14-T03-typical-curvature`; 2026-11-14.
 - Author: Rohan Arun, with Claude (Anthropic) assistance in a Claude Code session.
 - Tracks: T03-D primary; T04 and T06 related.
-- Outcome: **negative result for a specific untried variant of the geometric route.** A probabilistic version of the curvature argument ("positive curvature on typical configurations, with the atypical set controlled separately") fails at the coupling range that matters. No mass-gap estimate.
+- Outcome: **negative result for two untried variants of the geometric route.** (1) A probabilistic version of the curvature argument ("positive curvature on typical configurations, with the atypical set controlled separately") fails at the coupling range that matters. (2) Restricting to directions orthogonal to the gauge orbits does not repair it: the compressed horizontal matrix is also negative for $\beta\geq0.5$ (see the addendum). The true quotient curvature, which adds terms not computed here, remains untested. No mass-gap estimate.
 - Evidence: Monte Carlo and floating-point linear algebra on $3^4$ and $4^4$ tori. Exact Hessian, validated against finite differences. No proof, no Lean, no independent review.
 - Repository base commit: `ff784a0`.
 - Toolchain: Python 3.9.6, numpy 2.0.2, scipy 1.13.1.
@@ -72,17 +72,54 @@ python3 auto-research/negative-results/2026-11-14-T03-typical-curvature/check_ty
 
 The $4^4$ run took about 215 seconds on 10 parallel processes; the $3^4$ run was faster. [Receipt](verification.json). numpy printed spurious matmul warnings in the validation step; all reported values are finite and the finite-difference agreement is the check that matters.
 
+## Addendum: are the negative directions gauge or physical?
+
+Question: the full matrix includes gauge directions, which gauge-invariant observables do not see. Does the negative band disappear once they are projected out?
+
+Method (script [check_horizontal_curvature.py](check_horizontal_curvature.py), which imports the sampler and Hessian above). At each sampled $U$ write tangent vectors as $\xi$ with $V=U\exp(\xi)$. An infinitesimal gauge transformation $\epsilon$ gives $\xi_e=\mathrm{Ad}(U_e^{-1})\epsilon_x-\epsilon_{x+\mu}$. The horizontal subspace is the orthogonal complement of these vectors in the product metric. The script reports (a) the lowest eigenvalues of the compressed matrix $Q_h^{T}(2I+\beta\,\mathrm{Hess})Q_h$, and (b) the gauge weight $\|Q_g^{T}v\|^2$ of the lowest eigenvectors $v$ of the full matrix.
+
+Validation of the gauge map: the derivative of $\sum_p\mathrm{price}$ along gauge directions is $2\times10^{-8}$ (it must vanish); a finite gauge transformation changes it by $6\times10^{-14}$; the map agrees with the true infinitesimal gauge move to $8\times10^{-6}$; the map has full rank ($243$ of $243$ on $3^4$).
+
+| $\beta$ | lowest BE, full ($4^4$) | lowest BE, horizontal ($4^4$) | horizontal, worst sample | $\beta\times$ horizontal $\lambda_{\min}(\mathrm{Hess})$ | gauge weight of lowest eigenvectors |
+| --- | --- | --- | --- | --- | --- |
+| 0.5 | −1.84 | −1.74 | −1.83 | −3.7 | 0.03 |
+| 1 | −4.98 | −4.87 | −5.11 | −6.9 | 0.03 |
+| 2 | −8.46 | −7.70 | −8.37 | −9.7 | 0.12 |
+| 4 | −9.55 | −3.51 | −3.62 | −5.5 | 0.66 |
+| 8 | −11.47 | −3.07 | −3.25 | −5.1 | 0.84 |
+
+Four samples per coupling on $4^4$; the $3^4$ run (six samples, $\beta\in\{0.25,\dots,8\}$) agrees to about $0.3$ at $\beta\geq4$ and to $0.1$ at $\beta\leq1$ ([horiz_L3.json](horiz_L3.json), [horiz_L4.json](horiz_L4.json)). At $\beta=0.25$ on $3^4$ the horizontal minimum is $+0.035$ (worst sample $-0.003$), the same threshold behaviour as before.
+
+Observations:
+
+1. **At $\beta\leq1$ the negative band is physical.** Less than 4% of the lowest eigenvectors lies in gauge directions and projecting them out changes the minimum by about $0.1$.
+2. **At $\beta\geq4$ the full matrix is dominated by gauge directions** (gauge weight $0.66$–$0.84$; the gauge block alone has minimum $-6.5$ at $\beta=8$). Removing them improves the minimum from $-11.5$ to $-3.1$, but it stays negative.
+3. **The horizontal minimum appears to saturate at weak coupling.** The product $\beta\times\lambda_{\min}(\mathrm{Hess}|_h)$ is about $-5.5$ at $\beta=4$ and $-5.1$ at $\beta=8$ on $4^4$ (and $-5.5,-5.3$ on $3^4$): the Hessian's negative part shrinks like $1/\beta$, consistent with a correction of second order in the typical plaquette angle ($\theta^2\sim1/\beta$). Two couplings do not establish a limit, but if it holds, the compressed horizontal curvature tends to about $2-5\approx-3$, a bounded negative constant rather than a divergence.
+
+What this does **not** settle: the compressed matrix is not the Ricci curvature of the quotient. For a Riemannian submersion O'Neill's formulas add a non-negative term built from the curvature of the connection, and gauge orbits are not totally geodesic, so the volume of the orbit also weights the quotient measure. I have not computed either. Heuristically both are independent of $\beta$ and the first scales with the plaquette field strength, so I would expect them to vanish as $\beta\to\infty$ and to leave the weak-coupling conclusion (negative) intact, but at intermediate coupling ($\beta\approx0.5$–$2$) they are $O(1)$ and could change the sign. That is the open question. Orbit-space geometry in the literature (Singer; the work cited in the posterior-curvature record) concerns exactly these terms and was not consulted.
+
+Reproduction:
+
+```sh
+python3 auto-research/negative-results/2026-11-14-T03-typical-curvature/check_horizontal_curvature.py validate
+python3 auto-research/negative-results/2026-11-14-T03-typical-curvature/check_horizontal_curvature.py run 4 0.5,1,2,4,8 4 150 15 horiz_L4.json
+python3 auto-research/negative-results/2026-11-14-T03-typical-curvature/check_horizontal_curvature.py run 3 0.25,0.5,1,2,4,8 6 150 15 horiz_L3.json
+```
+
+The $3^4$ run took about 22 seconds per coupling in parallel; the $4^4$ run several minutes. Receipt fields are in [verification.json](verification.json).
+
 ## Failure lesson
 
 Pointwise convexity of the Wilson action's configuration space is not the mechanism behind spatial mixing at intermediate coupling: negative curvature directions are typical, not rare. Before building a probabilistic argument on a curvature bound, measure the typical spectrum.
 
 ## Track contributions and next experiment
 
-- T03-D: the typical-configuration variant of the curvature route is closed at $\beta\gtrsim0.3$.
+- T03-D: the typical-configuration variant of the curvature route is closed at $\beta\gtrsim0.3$; the horizontal-compression variant is closed as well, with the true quotient terms untested.
 - T06: a recorded scope result for the geometric family.
 
-Next bounded experiment, if the geometric theme continues: compute the same spectrum **after projecting out gauge directions and restricting to horizontal directions** (the metric of the quotient), to test whether the negative band lies in physical or gauge directions. Success criterion: horizontal-subspace $\lambda_{\min}$ either positive at all sampled $\beta$ (reopening the quotient route) or negative with the same magnitude (closing it). Cost: one more projection step in the existing script.
+Next bounded experiment: compute the missing quotient terms exactly at intermediate coupling. That means the O'Neill $A$-tensor contribution to the Ricci curvature of the horizontal distribution and the Hessian of $-\log$ of the orbit volume $\det(G^{T}G)^{1/2}$, on the same sampled configurations at $\beta\in[0.5,2]$. Success criterion: the corrected horizontal matrix is positive at all sampled couplings (reopening the quotient route) or still negative (closing it there). Cost: moderate; the log-determinant Hessian and the horizontal brackets of the product metric both need new code.
 
 ## Review and correction history
 
 - 2026-11-14: created. Single AI session, small samples, no independent review.
+- 2026-11-14: addendum on gauge versus horizontal directions added to this record (same branch and PR). A first commit message and PR description announced the addendum before the README edit had been applied (an escape-sequence error in my edit script); corrected by the follow-up commit.

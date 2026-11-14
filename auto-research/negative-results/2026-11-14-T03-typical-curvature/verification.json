@@ -24,5 +24,30 @@
   "monte_carlo": true,
   "equilibrium_precision_tested": false,
   "independent_review": false,
-  "Yang_Mills_spatial_decay_proved": false
+  "Yang_Mills_spatial_decay_proved": false,
+  "horizontal_addendum": {
+    "command_validate": "python3 auto-research/negative-results/2026-11-14-T03-typical-curvature/check_horizontal_curvature.py validate",
+    "commands_run": [
+      "... run 3 0.25,0.5,1,2,4,8 6 150 15 horiz_L3.json",
+      "... run 4 0.5,1,2,4,8 4 150 15 horiz_L4.json"
+    ],
+    "exit_codes": {
+      "L3": 0,
+      "L4": 0
+    },
+    "source_sha256": "3c40da2697e06d6c63e4dd539f0da15202441963280b54aec884762d077c74d0",
+    "output_sha256": {
+      "horiz_L3.json": "46f6327a3c7ed4f0cda867e75aa0db7b8f9a4c451aaf01212c2296b56cd90e35",
+      "horiz_L4.json": "0c8e3a26645f84fc77602ca82cbd55e2e006e2f7f9f777e73adaaa2bb987670b"
+    },
+    "gauge_map_validation": {
+      "first_derivative_along_gauge": 1.99e-08,
+      "finite_gauge_invariance": 5.7e-14,
+      "tangent_map_error": 8.2e-06,
+      "rank": "243 of 243 on 3^4"
+    },
+    "quotient_ricci_computed": false,
+    "oneill_terms_computed": false,
+    "orbit_volume_term_computed": false
+  }
 }
