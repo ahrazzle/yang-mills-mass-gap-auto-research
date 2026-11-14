@@ -88,11 +88,11 @@ Validation of the gauge map: the derivative of $\sum_p\mathrm{price}$ along gaug
 | 4 | −9.55 | −3.51 | −3.62 | −5.5 | 0.66 |
 | 8 | −11.47 | −3.07 | −3.25 | −5.1 | 0.84 |
 
-Four samples per coupling on $4^4$; the $3^4$ run (six samples, $\beta\in\{0.25,\dots,8\}$) agrees to about $0.3$ at $\beta\geq4$ and to $0.1$ at $\beta\leq1$ ([horiz_L3.json](horiz_L3.json), [horiz_L4.json](horiz_L4.json)). At $\beta=0.25$ on $3^4$ the horizontal minimum is $+0.035$ (worst sample $-0.003$), the same threshold behaviour as before.
+Four samples per coupling on $4^4$; the $3^4$ run (six samples, $\beta\in\{0.25,\dots,8\}$) agrees with the $4^4$ horizontal minimum to within $0.3$ at every common coupling ([horiz_L3.json](horiz_L3.json), [horiz_L4.json](horiz_L4.json)). At $\beta=0.25$ on $3^4$ the horizontal minimum is $+0.035$ (worst sample $-0.003$), the same threshold behaviour as before.
 
 Observations:
 
-1. **At $\beta\leq1$ the negative band is physical.** Less than 4% of the lowest eigenvectors lies in gauge directions and projecting them out changes the minimum by about $0.1$.
+1. **At $\beta\leq1$ the negative band is physical.** Less than 4% of the lowest eigenvectors lies in gauge directions and projecting them out changes the minimum by $0.1$–$0.2$.
 2. **At $\beta\geq4$ the full matrix is dominated by gauge directions** (gauge weight $0.66$–$0.84$; the gauge block alone has minimum $-6.5$ at $\beta=8$). Removing them improves the minimum from $-11.5$ to $-3.1$, but it stays negative.
 3. **The horizontal minimum appears to saturate at weak coupling.** The product $\beta\times\lambda_{\min}(\mathrm{Hess}|_h)$ is about $-5.5$ at $\beta=4$ and $-5.1$ at $\beta=8$ on $4^4$ (and $-5.5,-5.3$ on $3^4$): the Hessian's negative part shrinks like $1/\beta$, consistent with a correction of second order in the typical plaquette angle ($\theta^2\sim1/\beta$). Two couplings do not establish a limit, but if it holds, the compressed horizontal curvature tends to about $2-5\approx-3$, a bounded negative constant rather than a divergence.
 
